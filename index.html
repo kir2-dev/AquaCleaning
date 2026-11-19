@@ -469,8 +469,117 @@
       alert('⚠️ ДЕМО-ВЕРСИЯ ДЛЯ «АКВАКЛИНИНГ»\n\nВ рабочей версии эта заявка сразу улетит вам в WhatsApp / MAX:\n\n' + buildEstimateText());
     }
 
-    renderExtras();
-    recalc();
+    // ВСТАВЬ СЮДА ССЫЛКУ НА ОПУБЛИКОВАННУЮ CSV-ТАБЛИЦУ «АКВАКЛИНИНГ»:
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWg3OoejDEuYinAfc1Lo6V284_GJ5LbxwFKpoa9jyibQgWs0kI2H4JMn4Ot2gR7SFOKAAhXgYMzZ9L/pub?output=csv';
+
+    function parseCSVRow(row) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    }
+
+    async function loadPricesFromGoogleSheet() {
+      renderExtras();
+      recalc();
+
+      if (!SHEET_CSV_URL || SHEET_CSV_URL.startsWith('СЮДА_')) return;
+
+      try {
+        const urlWithNoCache = SHEET_CSV_URL + (SHEET_CSV_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+        const response = await fetch(urlWithNoCache);
+        if (!response.ok) throw new Error('Ошибка сети при загрузке прайса');
+
+        const csvText = await response.text();
+        const rows = csvText.split(/\r?\n/).filter(r => r.trim() !== '');
+
+        const newExtras = [];
+        const newCities = [];
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = parseCSVRow(rows[i]);
+          if (cols.length < 5) continue;
+
+          const type = (cols[0] || '').replace(/['"]+/g, '').trim().toLowerCase();
+          const id = (cols[1] || '').replace(/['"]+/g, '').trim();
+          const title = (cols[2] || '').replace(/['"]+/g, '').trim();
+          const unit = (cols[3] || '').replace(/['"]+/g, '').trim();
+          const priceStr = (cols[4] || '').replace(/['"]+/g, '').trim();
+
+          const price = parseFloat(priceStr.replace(/\s+/g, '').replace(',', '.'));
+          if (isNaN(price)) continue;
+
+          if (type === 'tariff') {
+            // Обновляем цену на кнопке выбора типа уборки
+            const btn = document.querySelector(`.tariff-btn[data-tariff="${id}"]`);
+            if (btn) {
+              btn.children[1].textContent = `от ${price.toLocaleString('ru-RU')} ₽ / м²`;
+              const fullNames = {
+                general: 'Генеральная уборка',
+                repair: 'Уборка после ремонта',
+                tenants: 'Уборка после квартирантов'
+              };
+              const fullName = fullNames[id] || title;
+              btn.setAttribute('onclick', `selectTariff('${id}', ${price}, '${fullName}')`);
+              if (currentTariffKey === id) {
+                currentBaseRate = price;
+                currentTariffName = fullName;
+              }
+            }
+          } else if (type === 'extra') {
+            const existingItem = EXTRA_SERVICES.find(item => item.id === id);
+            newExtras.push({
+              id: id || `extra_${i}`,
+              title: title,
+              unit: unit,
+              price: price,
+              qty: existingItem ? existingItem.qty : 0
+            });
+          } else if (type === 'city') {
+            newCities.push({ title, fee: price });
+          }
+        }
+
+        if (newExtras.length > 0) {
+          EXTRA_SERVICES = newExtras;
+          renderExtras();
+        }
+
+        if (newCities.length > 0) {
+          const citySelect = document.getElementById('citySelect');
+          const previousSelectedCity = citySelect.value;
+
+          citySelect.innerHTML = newCities.map(c => {
+            const label = c.fee === 0
+              ? `${c.title} (без доплаты)`
+              : `${c.title} (+${c.fee.toLocaleString('ru-RU')} ₽ выезд)`;
+            return `<option value="${c.title}" data-fee="${c.fee}">${label}</option>`;
+          }).join('');
+
+          if (newCities.some(c => c.title === previousSelectedCity)) {
+            citySelect.value = previousSelectedCity;
+          }
+        }
+
+        recalc();
+      } catch (err) {
+        console.warn('Используются базовые цены из кода:', err);
+      }
+    }
+
+    loadPricesFromGoogleSheet();
   </script>
 </body>
 </html>
