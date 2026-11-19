@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор сметы — Клининговая компания «АкваКлининг» (ул. Закруткина, 61)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background: #fff !important; color: #000 !important; }
+    }
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="bg-sky-50/40 text-slate-800 font-sans antialiased">
+
+  <!-- Шапка -->
+  <header class="bg-white border-b border-sky-100 sticky top-0 z-30 no-print shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-sky-50 overflow-hidden flex items-center justify-center border border-sky-200 shadow-sm p-1">
+          <!-- Векторный логотип в стиле «АкваКлининг» -->
+<svg viewBox="0 0 100 100" class="w-full h-full">
+            <circle cx="50" cy="48" r="34" fill="#0284c7"/>
+            <circle cx="28" cy="36" r="14" fill="#0284c7"/>
+            <circle cx="72" cy="36" r="14" fill="#0284c7"/>
+            <circle cx="20" cy="54" r="11" fill="#0284c7"/>
+            <circle cx="80" cy="54" r="11" fill="#0284c7"/>
+            <circle cx="38" cy="24" r="13" fill="#0284c7"/>
+            <circle cx="62" cy="24" r="13" fill="#0284c7"/>
+            <circle cx="18" cy="38" r="7" fill="#38bdf8"/>
+            <circle cx="74" cy="22" r="8" fill="#38bdf8"/>
+            <circle cx="84" cy="44" r="6" fill="#38bdf8"/>
+            <polygon points="50,24 24,45 31,45 31,74 69,74 69,45 76,45" fill="#ffffff"/>
+            <polyline points="23,46 50,23 77,46" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="43" y="48" width="6" height="6" fill="#0284c7"/>
+            <rect x="51" y="48" width="6" height="6" fill="#0284c7"/>
+            <rect x="43" y="56" width="6" height="6" fill="#0284c7"/>
+            <rect x="51" y="56" width="6" height="6" fill="#0284c7"/>
+            <path d="M50 4 L52 10 L58 12 L52 14 L50 20 L48 14 L42 12 L48 10 Z" fill="#38bdf8"/>
+          </svg>
+           </div>
+        <div>
+          <h1 class="font-bold text-base md:text-lg leading-tight text-sky-950">Клининговая компания «АкваКлининг»</h1>
+          <p class="text-xs text-sky-600 font-medium">ул. Закруткина, 61</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Баннер акции -->
+  <div class="max-w-5xl mx-auto px-4 pt-4 no-print">
+    <div class="bg-gradient-to-r from-sky-600 to-cyan-500 text-white rounded-2xl px-4 py-3 shadow-sm flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 text-xs sm:text-sm font-medium">
+        <span class="text-lg">🎁</span>
+        <span><b>Акция месяца:</b> при заказе генеральной уборки с мытьём окон — <b>химчистка дивана в подарок!</b></span>
+      </div>
+      <span class="text-[11px] bg-white/20 px-2.5 py-1 rounded-full font-semibold">Учитывается в расчёте автоматически</span>
+    </div>
+  </div>
+
+  <!-- Основной контент -->
+  <main class="max-w-5xl mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
+    
+    <!-- Левая колонка: Настройка заказа -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- 1. Тип уборки, площадь и локация -->
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100 space-y-4">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">1</span>
+          Вид уборки, площадь и выезд
+        </h2>
+
+        <!-- Выбор тарифа -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Выберите тип уборки:</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="tariffSelector">
+            <button type="button" onclick="selectTariff('general', 180, 'Генеральная уборка')" data-tariff="general"
+              class="tariff-btn p-2.5 rounded-xl border-2 border-sky-500 bg-sky-50 text-left transition">
+              <div class="text-xs font-bold text-sky-950">Генеральная</div>
+              <div class="text-xs text-sky-700 font-semibold mt-0.5">от 180 ₽ / м²</div>
+            </button>
+            <button type="button" onclick="selectTariff('repair', 200, 'Уборка после ремонта')" data-tariff="repair"
+              class="tariff-btn p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:border-sky-300 text-left transition">
+              <div class="text-xs font-bold text-slate-800">После ремонта</div>
+              <div class="text-xs text-slate-500 font-semibold mt-0.5">от 200 ₽ / м²</div>
+            </button>
+            <button type="button" onclick="selectTariff('tenants', 250, 'Уборка после квартирантов')" data-tariff="tenants"
+              class="tariff-btn p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:border-sky-300 text-left transition">
+              <div class="text-xs font-bold text-slate-800">После квартирантов</div>
+              <div class="text-xs text-slate-500 font-semibold mt-0.5">от 250 ₽ / м²</div>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-sm font-medium mb-1.5">
+            <span>Площадь помещения:</span>
+            <span class="text-sky-600 font-bold"><span id="areaVal">55</span> м²</span>
+          </div>
+          <input id="areaInput" type="range" min="15" max="400" value="55" step="5"
+            class="w-full accent-sky-600 cursor-pointer" oninput="recalc()">
+          <div class="flex justify-between text-xs text-slate-400 mt-1">
+            <span>15 м²</span>
+            <span>400 м²</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Населённый пункт (Ростов и РО)</label>
+            <select id="citySelect" onchange="recalc()" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:border-sky-500">
+              <option value="Ростов-на-Дону" data-fee="0">Ростов-на-Дону (без доплаты)</option>
+              <option value="Батайск" data-fee="800">Батайск (+800 ₽ выезд)</option>
+              <option value="Аксай" data-fee="800">Аксай (+800 ₽ выезд)</option>
+              <option value="Чалтырь" data-fee="1000">Чалтырь (+1 000 ₽ выезд)</option>
+              <option value="Новочеркасск" data-fee="1500">Новочеркасск (+1 500 ₽ выезд)</option>
+              <option value="Таганрог / Азов / РО" data-fee="2500">Таганрог / Азов / др. (от 2 500 ₽)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Улица, дом / ЖК</label>
+            <input id="addressInput" type="text" placeholder="Например: ул. Закруткина, 61"
+              class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:border-sky-500" oninput="recalc()">
+          </div>
+        </div>
+      </section>
+
+      <!-- Что входит в базовый тариф -->
+      <section class="bg-sky-50/80 p-5 rounded-2xl border border-sky-200/80">
+        <div class="flex items-center justify-between cursor-pointer" onclick="toggleChecklist()">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-700">Включено в базовый тариф</span>
+            <h3 class="text-sm font-bold text-slate-900 mt-0.5">Стандартный перечень работ «АкваКлининг»</h3>
+          </div>
+          <button type="button" id="toggleBtn" class="text-xs font-semibold text-sky-700 bg-white px-3 py-1.5 rounded-lg border border-sky-200 shadow-sm">
+            Показать список ▼
+          </button>
+        </div>
+
+        <ul id="baseChecklist" class="hidden mt-4 space-y-2 text-xs text-slate-700 border-t border-sky-200/60 pt-3">
+          <li>✅ <b>Обеспыливание всех поверхностей:</b> стены, потолки, мебель, открытые полки, экраны ТВ, ковры и мягкая мебель.</li>
+          <li>✅ <b>Влагостойкие поверхности:</b> двери и наличники, подоконники, батареи, полы и плинтусы, все шкафы сверху.</li>
+          <li>✅ <b>Мебель и труднодоступные зоны:</b> мытьё мебельных фасадов, отодвигание нетяжёлой мебели и мытьё полов под ней.</li>
+          <li>✅ <b>Кухня (база):</b> обезжиривание фасадов, фартука, столешницы, мытьё варочной панели, стола и стульев.</li>
+          <li>✅ <b>Санузел (база):</b> удаление водного камня, мытьё умывальников, унитазов, ванны, кафеля и сантехники.</li>
+          <li>✅ <b>Детали:</b> мытьё розеток, выключателей, светильников и натирка зеркал без разводов.</li>
+        </ul>
+      </section>
+
+      <!-- 2. Доп. услуги по прайсу АкваКлининг -->
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100 space-y-4">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">2</span>
+          Дополнительные услуги и техника
+        </h2>
+
+        <div id="extrasContainer" class="space-y-2.5">
+          <!-- Генерируется скриптом -->
+        </div>
+      </section>
+
+      <!-- 3. Контакты и комментарий -->
+      <section class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100 space-y-3">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs flex items-center justify-center font-bold">3</span>
+          Ваши контакты и комментарий
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input id="clientName" type="text" placeholder="Ваше имя" oninput="recalc()"
+            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:border-sky-500">
+          <input id="clientPhone" type="tel" placeholder="Номер телефона" oninput="recalc()"
+            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:border-sky-500">
+        </div>
+        <div>
+          <textarea id="clientComment" rows="2" placeholder="Комментарий (степень загрязнения, этаж, пожелания по времени...)" oninput="recalc()"
+            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-slate-50 focus:bg-white focus:outline-none focus:border-sky-500"></textarea>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Правая колонка: Смета и отправка -->
+    <div class="lg:col-span-5">
+      <div class="bg-white p-5 rounded-2xl shadow-sm border border-sky-100 sticky top-20 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <span class="text-xs text-slate-400 font-medium">Предварительный расчёт</span>
+            <h3 class="text-lg font-bold text-slate-900">Смета заказа</h3>
+          </div>
+          <span id="promoBadge" class="hidden text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full">
+            🎁 Подарок применён
+          </span>
+        </div>
+
+        <!-- Детализация -->
+        <div id="estimateList" class="space-y-2 text-sm max-h-72 overflow-y-auto pr-1"></div>
+
+        <!-- Итого -->
+        <div class="border-t border-slate-200 pt-3 flex items-baseline justify-between">
+          <span class="text-sm font-semibold text-slate-600">Итого к оплате:</span>
+          <span id="totalPrice" class="text-2xl font-extrabold text-sky-600">0 ₽</span>
+        </div>
+
+        <!-- Предпросмотр сообщения -->
+        <div class="bg-sky-50/70 rounded-xl p-3 border border-sky-200/80 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-sky-900 uppercase tracking-wide">💬 Текст заявки менеджеру:</span>
+            <button onclick="navigator.clipboard.writeText(buildEstimateText()); showNotice('Текст сметы скопирован!');" class="text-xs text-sky-700 hover:text-sky-900 font-medium underline">Копировать</button>
+          </div>
+          <div id="messagePreviewBox" class="text-xs font-mono bg-white p-2.5 rounded-lg border border-sky-100 text-slate-700 whitespace-pre-wrap max-h-36 overflow-y-auto"></div>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="space-y-2">
+          <button onclick="sendToTelegram()"
+            class="w-full py-3 px-4 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2">
+            <span>✈️ Отправить смету в Telegram (Демо)</span>
+          </button>
+
+          <button onclick="sendToWhatsApp()"
+            class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-sm transition flex items-center justify-center gap-2">
+            <span>💬 Отправить смету в WhatsApp / MAX (Демо)</span>
+          </button>
+
+          <button onclick="window.print()"
+            class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs transition flex items-center justify-center gap-2">
+            <span>📄 Сохранить бланк сметы в PDF</span>
+          </button>
+        </div>
+
+        <p id="statusNotice" class="text-xs text-center text-sky-800 bg-sky-50 py-2 px-3 rounded-lg hidden"></p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Печатный бланк (PDF) -->
+  <div class="print-only max-w-3xl mx-auto p-8">
+    <div class="flex justify-between items-start border-b-2 border-sky-600 pb-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-sky-950">Клининговая компания «АкваКлининг»</h1>
+        <p class="text-sm text-gray-600">Ростов-на-Дону, ул. Закруткина, 61 | Тел.: +7 (951) 505-03-64</p>
+      </div>
+      <div class="text-right text-sm">
+        <div id="printDate" class="text-gray-500"></div>
+      </div>
+    </div>
+
+    <div id="printClientInfo" class="mb-6 text-sm space-y-1 bg-gray-50 p-4 rounded-lg border"></div>
+
+    <h2 class="font-bold text-base mb-2">Детализация стоимости работ:</h2>
+    <div id="printEstimateTable" class="border-t border-b border-gray-300 py-3 space-y-2 text-sm mb-4"></div>
+
+    <div class="flex justify-between items-center text-lg font-bold mb-6">
+      <span>ИТОГО ПО СМЕТЕ:</span>
+      <span id="printTotalPrice"></span>
+    </div>
+
+    <div class="text-xs text-gray-600 space-y-1 border-t pt-4">
+      <p class="font-bold text-gray-800">Примечание:</p>
+      <p>Расчёт является предварительным. Итоговая стоимость зависит от степени загрязнения и объёма работ.</p>
+    </div>
+  </div>
+
+  <script>
+    let currentTariffKey = 'general';
+    let currentBaseRate = 180;
+    let currentTariffName = 'Генеральная уборка';
+
+    // Актуальный прайс-лист из карточки АкваКлининг
+    let EXTRA_SERVICES = [
+      { id: 'windows', title: 'Мытьё окон (с двух сторон)', unit: 'ств.', price: 700, qty: 0 },
+      { id: 'chem_sofa', title: 'Химчистка мягкой мебели (диван / кресло)', unit: 'предм.', price: 2500, qty: 0 },
+      { id: 'oven', title: 'Чистка духового шкафа внутри', unit: 'шт.', price: 1200, qty: 0 },
+      { id: 'hood', title: 'Чистка кухонной вытяжки', unit: 'шт.', price: 1200, qty: 0 },
+      { id: 'microwave', title: 'Чистка микроволновой печи', unit: 'шт.', price: 800, qty: 0 },
+      { id: 'kitchen_only', title: 'Отдельная комплексная уборка кухни', unit: 'усл.', price: 5000, qty: 0 },
+      { id: 'fridge', title: 'Мытьё холодильника внутри', unit: 'шт.', price: 1000, qty: 0 },
+      { id: 'pool', title: 'Мытьё чаши бассейна', unit: 'м²', price: 200, qty: 0 }
+    ];
+
+    function selectTariff(key, rate, name) {
+      currentTariffKey = key;
+      currentBaseRate = rate;
+      currentTariffName = name;
+
+      document.querySelectorAll('.tariff-btn').forEach(btn => {
+        if (btn.dataset.tariff === key) {
+          btn.className = 'tariff-btn p-2.5 rounded-xl border-2 border-sky-500 bg-sky-50 text-left transition';
+          btn.children[0].className = 'text-xs font-bold text-sky-950';
+          btn.children[1].className = 'text-xs text-sky-700 font-semibold mt-0.5';
+        } else {
+          btn.className = 'tariff-btn p-2.5 rounded-xl border border-slate-200 bg-slate-50/60 hover:border-sky-300 text-left transition';
+          btn.children[0].className = 'text-xs font-bold text-slate-800';
+          btn.children[1].className = 'text-xs text-slate-500 font-semibold mt-0.5';
+        }
+      });
+
+      recalc();
+    }
+
+    function renderExtras() {
+      const container = document.getElementById('extrasContainer');
+      container.innerHTML = EXTRA_SERVICES.map((item, idx) => `
+        <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-sky-400 transition bg-slate-50/50">
+          <div class="pr-2">
+            <div class="text-sm font-medium text-slate-850">${item.title}</div>
+            <div class="text-xs text-slate-500">${item.price.toLocaleString('ru-RU')} ₽ / ${item.unit}</div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="button" onclick="changeQty(${idx}, -1)"
+              class="w-7 h-7 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100">−</button>
+            <span id="qty-${item.id}" class="w-6 text-center text-sm font-bold">${item.qty}</span>
+            <button type="button" onclick="changeQty(${idx}, 1)"
+              class="w-7 h-7 rounded-lg bg-sky-600 text-white font-bold hover:bg-sky-700">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function changeQty(index, delta) {
+      EXTRA_SERVICES[index].qty = Math.max(0, EXTRA_SERVICES[index].qty + delta);
+      document.getElementById(`qty-${EXTRA_SERVICES[index].id}`).textContent = EXTRA_SERVICES[index].qty;
+      recalc();
+    }
+
+    function toggleChecklist() {
+      const list = document.getElementById('baseChecklist');
+      const btn = document.getElementById('toggleBtn');
+      const isHidden = list.classList.contains('hidden');
+      list.classList.toggle('hidden');
+      btn.textContent = isHidden ? 'Скрыть список ▲' : 'Показать список ▼';
+    }
+
+    function getCalculationData() {
+      const area = parseInt(document.getElementById('areaInput').value, 10) || 55;
+      const citySelect = document.getElementById('citySelect');
+      const city = citySelect.value;
+      const travelFee = parseInt(citySelect.options[citySelect.selectedIndex].dataset.fee, 10) || 0;
+      const address = document.getElementById('addressInput').value.trim();
+      const name = document.getElementById('clientName').value.trim() || 'Не указано';
+      const phone = document.getElementById('clientPhone').value.trim() || 'Не указан';
+      const comment = document.getElementById('clientComment').value.trim();
+
+      const baseCost = area * currentBaseRate;
+      const selectedExtras = EXTRA_SERVICES.filter(item => item.qty > 0);
+
+      // Проверка акции: Генеральная уборка + мытьё окон -> 1 химчистка дивана бесплатно
+      const hasWindows = EXTRA_SERVICES.find(i => i.id === 'windows')?.qty > 0;
+      const hasSofa = EXTRA_SERVICES.find(i => i.id === 'chem_sofa')?.qty > 0;
+      const promoApplied = (currentTariffKey === 'general' && hasWindows && hasSofa);
+
+      let extrasCost = 0;
+      selectedExtras.forEach(item => {
+        if (item.id === 'chem_sofa' && promoApplied) {
+          extrasCost += Math.max(0, item.qty - 1) * item.price;
+        } else {
+          extrasCost += item.qty * item.price;
+        }
+      });
+
+      const total = baseCost + travelFee + extrasCost;
+
+      return { area, city, travelFee, address, name, phone, comment, baseCost, selectedExtras, promoApplied, total };
+    }
+
+    function recalc() {
+      const data = getCalculationData();
+      document.getElementById('areaVal').textContent = data.area;
+
+      const promoBadge = document.getElementById('promoBadge');
+      if (data.promoApplied) {
+        promoBadge.classList.remove('hidden');
+      } else {
+        promoBadge.classList.add('hidden');
+      }
+      
+      const lines = [];
+      lines.push(`
+        <div class="flex justify-between py-1.5 border-b border-slate-100">
+          <span>${currentTariffName} (${data.area} м²)</span>
+          <span class="font-semibold">${data.baseCost.toLocaleString('ru-RU')} ₽</span>
+        </div>
+      `);
+
+      if (data.travelFee > 0) {
+        lines.push(`
+          <div class="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
+            <span>Выезд (${data.city})</span>
+            <span class="font-semibold">${data.travelFee.toLocaleString('ru-RU')} ₽</span>
+          </div>
+        `);
+      }
+
+      data.selectedExtras.forEach(item => {
+        if (item.id === 'chem_sofa' && data.promoApplied) {
+          const paidQty = item.qty - 1;
+          const sum = paidQty * item.price;
+          lines.push(`
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span>${item.title} (${item.qty} ${item.unit}, <b>1 в подарок 🎁</b>)</span>
+              <span class="font-semibold text-emerald-600">${sum === 0 ? '0 ₽ (Подарок)' : sum.toLocaleString('ru-RU') + ' ₽'}</span>
+            </div>
+          `);
+        } else {
+          const sum = item.qty * item.price;
+          lines.push(`
+            <div class="flex justify-between py-1.5 border-b border-slate-100">
+              <span>${item.title} (${item.qty} ${item.unit})</span>
+              <span class="font-semibold">${sum.toLocaleString('ru-RU')} ₽</span>
+            </div>
+          `);
+        }
+      });
+
+      document.getElementById('estimateList').innerHTML = lines.join('');
+      document.getElementById('totalPrice').textContent = data.total.toLocaleString('ru-RU') + ' ₽';
+      document.getElementById('messagePreviewBox').textContent = buildEstimateText();
+
+      document.getElementById('printDate').textContent = new Date().toLocaleDateString('ru-RU');
+      document.getElementById('printClientInfo').innerHTML = `
+        <div><b>Заказчик:</b> ${data.name} | <b>Тел.:</b> ${data.phone}</div>
+        <div><b>Адрес:</b> ${data.city}${data.address ? ', ' + data.address : ''}</div>
+        ${data.comment ? `<div><b>Комментарий:</b> ${data.comment}</div>` : ''}
+      `;
+      document.getElementById('printEstimateTable').innerHTML = lines.join('');
+      document.getElementById('printTotalPrice').textContent = data.total.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function buildEstimateText() {
+      const d = getCalculationData();
+      let text = `💧 СМЕТА ЗАКАЗА — «АкваКлининг» (Ростов)\n`;
+      text += `📍 Адрес: ${d.city}${d.address ? ', ' + d.address : ''}\n`;
+      text += `👤 Клиент: ${d.name}, тел: ${d.phone}\n`;
+      if (d.comment) text += `💬 Комментарий: ${d.comment}\n`;
+      text += `\n📋 РАСЧЁТ:\n`;
+      text += `• ${currentTariffName} (${d.area} м²): ${d.baseCost.toLocaleString('ru-RU')} ₽\n`;
+      if (d.travelFee > 0) {
+        text += `• Выезд в ${d.city}: ${d.travelFee.toLocaleString('ru-RU')} ₽\n`;
+      }
+      d.selectedExtras.forEach(item => {
+        if (item.id === 'chem_sofa' && d.promoApplied) {
+          const sum = (item.qty - 1) * item.price;
+          text += `• ${item.title} (${item.qty} ${item.unit}, 1 в подарок по акции 🎁): ${sum.toLocaleString('ru-RU')} ₽\n`;
+        } else {
+          text += `• ${item.title} (${item.qty} ${item.unit}): ${(item.qty * item.price).toLocaleString('ru-RU')} ₽\n`;
+        }
+      });
+      text += `\n💰 ИТОГО: ${d.total.toLocaleString('ru-RU')} ₽`;
+      return text;
+    }
+
+    function showNotice(msg) {
+      const el = document.getElementById('statusNotice');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 6000);
+    }
+
+    function sendToTelegram() {
+      alert('⚠️ ДЕМО-ВЕРСИЯ ДЛЯ «АКВАКЛИНИНГ»\n\nВ рабочей версии эта заявка сразу улетит вам в Telegram:\n\n' + buildEstimateText());
+    }
+
+    function sendToWhatsApp() {
+      alert('⚠️ ДЕМО-ВЕРСИЯ ДЛЯ «АКВАКЛИНИНГ»\n\nВ рабочей версии эта заявка сразу улетит вам в WhatsApp / MAX:\n\n' + buildEstimateText());
+    }
+
+    renderExtras();
+    recalc();
+  </script>
+</body>
+</html>
